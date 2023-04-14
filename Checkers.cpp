@@ -1,5 +1,7 @@
 #include<iostream>;
 #include<cstdint>;
+#include<cstdlib>
+#include<string>;
 #include<Windows.h>;
 using namespace std;
 
@@ -7,12 +9,34 @@ using namespace std;
 struct Checkers
 {
 	char player;
-	char x;
 	int y;
+	string x;
 
 } checker1, checker2;
 
 void dataPrint(char desk[8][8]);
+
+int checkV()
+{
+	int a;
+	while (true) // the cycle continues until the user enters the correct value
+	{
+		cin >> a;
+		if (cin.fail()) // if the previous extraction was unsuccessful,
+		{
+			cout << "Incorrect input. Enter int value: ";
+			cin.clear(); // then return the cin to 'normal' mode of operation
+			cin.ignore(32767, '\n'); // and remove the previous input values from the input buffer
+		}
+		else // if all is well, return a
+		{
+			cin.ignore(32767, '\n'); // and remove the previous input values from the input buffer
+			return a;
+		}
+	}
+
+	return 0;
+}
 
 void fillDesk(char desk[8][8])
 {
@@ -111,25 +135,47 @@ bool CheckStepPlayer(char desk[8][8], int &x, int &y, int x1, int y1, int x2, in
 	return false;
 }
 
-void Player(char desk[8][8], char ch)
+int Player(char desk[8][8], char ch)
 {
 	int x = 0, y = 0;
 	int x1, y1;
 	int x2, y2;
 	bool tf;
 
-start1:
+restart1:
 	tf = false;
 	x1 = 0, y1 = 0;
 	cout 
-		<< "\nPlayer " << ch << ": "
-		<< "\n  select pos \"Checker\":\n";
-	cout << "\t\tLetter: ";
-	cin >> checker1.x;
-	cout << "\t\tNumber: ";
-	cin >> checker1.y;
+		<< (ch == 'X'? "\n  White checker " : "\n  Black checker ") << ch
+		<< " (Q - STOP GAME.)"
+		<< "\n  select pos:";
+	cout << "\n\tLetter: ";
+	getline(cin, checker1.x);
+	if(checker1.x.length() > 1)
+	{
+		cout << "\n\tIncorrectly entered";
+		goto restart1;
+	}
 
-	x1 = static_cast<int>(checker1.x) - 97;
+	if (checker1.x[0] == 'q' || checker1.x[0] == 'Q')
+	{
+		cout << "\n\t!!!EXIT. STOP GAME!!!\n";
+		return -1;
+	}
+
+	x1 = static_cast<int>(checker1.x[0]) - 97;
+
+	if (x1 < 0 || x1 > 7)
+	{
+		cout << "\nLetter is not respect to a...h\n";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(32767, '\n');
+		goto restart1;
+	}
+
+	cout << "\tNumber: ";
+	checker1.y = checkV();
+
 	y1 = abs(checker1.y -= 8);
 
 	tf = CheckPosPlayer(desk, x1, y1, ch);
@@ -141,34 +187,55 @@ start1:
 		else
 		{
 			cout << "\n\tNo step";
-			goto start1;
+			goto restart1;
 		}
 	}
 	else
 	{
 		cout << "\n\tNo step";
-		goto start1;
+		goto restart1;
 	}
 
 
-start2:
+restart2:
 	tf = false;
 	x2 = 0, y2 = 0;
 	cout
-		<< "\nPlayer " << ch << ": "
-		<< "\n  select new pos \"Checker\":\n";
-	cout << "\t\tLetter: ";
-	cin >> checker1.x;
-	cout << "\t\tNumber: ";
-	cin >> checker1.y;
+		<< (ch == 'X' ? "\n  White checker " : "\n  Black checker ") << ch
+		<< " (Q - STOP GAME.)"
+		<< "\n  indicate pos:\n";
+	cout << "\tLetter: ";
+	getline(cin, checker1.x);
+	if (checker1.x.length() > 1)
+	{
+		cout << "\n\tIncorrectly entered";
+		goto restart2;
+	}
 
-	x2 = static_cast<int>(checker1.x) - 97;
+	if (checker1.x[0] == 'q' || checker1.x[0] == 'Q')
+	{
+		cout << "\n\t!!!Exit. Stop Game!!!\n";
+		return -1;
+	}
+
+	x2 = static_cast<int>(checker1.x[0]) - 97;
+
+	if (x2 < 0 || x2 > 7)
+	{
+		cout << "\nLetter is not respect to a...h\n";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(32767, '\n');
+		goto restart2;
+	}
+	cout << "\tNumber: ";
+	checker1.y = checkV();
+
 	y2 = abs(checker1.y -= 8);
 
 	if (desk[y2][x2] != '#')
 	{
 		cout << "\n\tNo step";
-		goto start2;
+		goto restart2;
 	}
 
 	tf = CheckStepPlayer(desk, x, y, x1, y1, x2, y2, ch);
@@ -178,36 +245,56 @@ start2:
 		if (abs(x2 - x1) > 1 && abs(y2 - y1) > 1)
 		{
 			desk[y][x] = '#';
+			return 1;
 		}
 	}
 	else
 	{
 		cout << "\n\tNo step";
-		goto start2;
+		goto restart2;
 	}
-	
+
+	return 0;
 }
 
-void dataProcess(char desk[8][8])
+int dataProcess(char desk[8][8], int nchecker)
 {
 	dataPrint(desk);
-
 	//Move checkers trought the desk
+	int count1 = 0, index1 = 0;
+	int count2 = 0, index2 = 0;
 	
 	do
 	{
-		//Functions of Players
-		Player(desk, 'X');
+
+		//Functions of Player1
+		
+		index1 = Player(desk, 'X');
+		if (index1 == -1)
+		{
+			return 0;
+		}
+		count1 += index1;
+
 		system("CLS");
 		dataPrint(desk);
+		cout << "\n\tQty of won Black Checker: " << count1;
+		cout << "\n\t\t\tRemain: " << nchecker - count1 << endl;
 
-		Player(desk, 'Y');
+		//Functions of Player1
+		index2 = Player(desk, 'Y');
+		if (index2 == -1)
+		{
+			return 0;
+		}
+		count2 += index2;
+
 		system("CLS");
 		dataPrint(desk);
+		cout << "\n\tQty of won White Checker: " << count2;
+		cout << "\n\t\t\tRemain: " << nchecker - count2 << endl;
 
-	} while (true);
-
-
+	} while (count1 < nchecker || count2 < nchecker);
 }
 
 void dataPrint(char desk[8][8])
@@ -242,11 +329,11 @@ void dataPrint(char desk[8][8])
 int main()
 {
 	char arr[8][8]{};
+	int nchecker = 12;
 
 	//Functions
 	fillDesk(arr);
-	dataProcess(arr);
-	//dataPrint(arr);
+	dataProcess(arr, nchecker);
 
 	return 0;
 }
