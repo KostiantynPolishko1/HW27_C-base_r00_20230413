@@ -43,6 +43,42 @@ void fillDesk(char desk[8][8])
 	}
 }
 
+bool CheckPosPlayer(char desk[8][8], int x1, int y1, char checker)
+{
+	char ch{};
+	if (checker == 'X')
+		ch = 'Y';
+	else
+		ch = 'X';
+
+	//Checking free space for step checker X
+	//I quarter - Up & Left
+	if (desk[y1 - 1][x1 - 1] == '#' && checker == 'X')
+		return true;
+	if ((desk[(y1 - 1)][(x1 - 1)] == ch) && (desk[y1 - 2][x1 - 2] == '#'))	//to kick X & Y
+		return true;
+
+	//II quarter - Up & Right
+	if (desk[y1 - 1][x1 + 1] == '#' && checker == 'X')
+		return true;
+	if ((desk[y1 - 1][x1 + 1] == ch) && (desk[y1 - 2][x1 + 2] == '#'))	//to kick X & Y
+		return true;
+
+	//III quarter - Down & Right
+	if (desk[y1 + 1][x1 + 1] == '#' && checker == 'Y')
+		return true;
+	if ((desk[y1 + 1][x1 + 1] == ch) && (desk[y1 + 2][x1 + 2] == '#'))	//to kick X & Y
+		return true;
+
+	//IV quarter - Down & Left
+	if (desk[y1 + 1][x1 - 1] == '#' && checker == 'Y')
+		return true;
+	if ((desk[y1 + 1][x1 - 1] == ch) && (desk[y1 + 2][x1 - 2] == '#'))	//to kick X & Y
+		return true;
+
+	return false;
+}
+
 bool CheckStepPlayer(char desk[8][8], int &x, int &y, int x1, int y1, int x2, int y2, char ch)
 {
 	if (desk[y2][x2] == '#' && (abs(x2 - x1) == 1 && abs(y2 - y1) == 1))
@@ -80,9 +116,10 @@ void Player(char desk[8][8], char ch)
 	int x = 0, y = 0;
 	int x1, y1;
 	int x2, y2;
-	bool tf = false;
+	bool tf;
 
 start1:
+	tf = false;
 	x1 = 0, y1 = 0;
 	cout 
 		<< "\nPlayer " << ch << ": "
@@ -94,15 +131,28 @@ start1:
 
 	x1 = static_cast<int>(checker1.x) - 97;
 	y1 = abs(checker1.y -= 8);
-	if(desk[y1][x1] == ch)
-		desk[y1][x1] = '#';
+
+	tf = CheckPosPlayer(desk, x1, y1, ch);
+
+	if (tf)
+	{
+		if (desk[y1][x1] == ch)
+			desk[y1][x1] = '#';
+		else
+		{
+			cout << "\n\tNo step";
+			goto start1;
+		}
+	}
 	else
 	{
 		cout << "\n\tNo step";
 		goto start1;
 	}
 
+
 start2:
+	tf = false;
 	x2 = 0, y2 = 0;
 	cout
 		<< "\nPlayer " << ch << ": "
@@ -146,7 +196,7 @@ void dataProcess(char desk[8][8])
 	
 	do
 	{
-		
+		//Functions of Players
 		Player(desk, 'X');
 		system("CLS");
 		dataPrint(desk);
@@ -193,7 +243,7 @@ int main()
 {
 	char arr[8][8]{};
 
-	//Function
+	//Functions
 	fillDesk(arr);
 	dataProcess(arr);
 	//dataPrint(arr);
