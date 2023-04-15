@@ -16,6 +16,8 @@ struct Checkers
 
 void dataPrint(char desk[8][8]);
 
+int kickKing(char desk[8][8], int x1, int y1, int x2, int y2, char ch, int quarter);
+
 int checkV()
 {
 	int a;
@@ -135,12 +137,231 @@ bool CheckStepPlayer(char desk[8][8], int &x, int &y, int x1, int y1, int x2, in
 	return false;
 }
 
+bool CheckStepKing(char desk[8][8], int x1, int y1, int x2, int y2, char ch, int &quarter)
+{
+	bool tf = false;
+	int dx = 0, dy = 0;
+	char chop{};
+	dx = x2 - x1;
+	dy = y2 - y1;
+
+	if (ch == 'X')
+		chop = 'Y';
+	if (ch == 'Y')
+		chop = 'X';
+
+	if (desk[y2][x2] == '#')
+	{
+		if (abs(dx) == abs(dy))
+			tf = true;
+	}
+	else
+		return false;
+
+	if (dx < 0 && dy < 0)
+		quarter = 1;
+	if (dx > 0 && dy < 0)
+		quarter = 2;
+	if (dx > 0 && dy > 0)
+		quarter = 3;
+	if (dx < 0 && dy > 0)
+		quarter = 4;
+
+	if (tf)
+	{
+		//Checking free space for step of Dyke
+		switch (quarter)
+		{
+		case 1:
+			//I quarter - Up & Left
+			for (int i = 1; i < abs(dx) - 1; i++)
+			{
+				if (desk[(y1 - i)][(x1 - i)] == ch)
+					return false;
+				if (desk[(y1 - i)][(x1 - i)] == chop && desk[(y1 - i) - 1][(x1 - i) - 1] == chop)
+					return false;
+			}
+			break;
+		case 2:
+			//II quarter - Up & Right
+			for (int i = 1; i < abs(dx) - 1; i++)
+			{
+				if (desk[(y1 - i)][(x1 + i)] == ch)
+					return false;
+				if (desk[(y1 - i)][(x1 + i)] == chop && desk[(y1 - i) - 1][(x1 + i) + 1] == chop)
+					return false;
+			}
+			break;
+		case 3:
+			//III quarter - Down & Right
+			for (int i = 1; i < abs(dx) - 1; i++)
+			{
+				if (desk[(y1 + i)][(x1 + i)] == ch)
+					return false;
+				if (desk[(y1 + i)][(x1 + i)] == chop && desk[(y1 + i) + 1][(x1 + i) + 1] == chop)
+					return false;
+			}
+
+			break;
+		case 4:
+			//IV quarter - Down & Left
+			for (int i = 1; i < abs(dx) - 1; i++)
+			{
+				if (desk[(y1 + i)][(x1 - i)] == ch)
+					return false;
+				if (desk[(y1 + i)][(x1 - i)] == chop && desk[(y1 + i) + 1][(x1 - i) - 1] == chop)
+					return false;
+			}
+			break;
+		default: return false;
+		}
+	}
+	
+	return true;
+}
+
+int stepKing(char desk[8][8], int x1, int y1, char dyke, char ch)
+{
+	int x = 0, y = 0, count = 0, quarter = 0;
+	int x2, y2;
+	bool tf;
+restart2:
+	tf = false;
+	x2 = 0, y2 = 0;
+	cout
+		<< (dyke == 'W' ? "\n  White checker " : "\n  Black checker ") << dyke
+		<< " (Q - STOP GAME.)"
+		<< "\n  indicate pos:\n";
+	cout << "\tLetter: ";
+	getline(cin, checker1.x);
+	if (checker1.x.length() > 1)
+	{
+		cout << "\n\tIncorrectly entered";
+		goto restart2;
+	}
+
+	if (checker1.x[0] == 'q' || checker1.x[0] == 'Q')
+	{
+		cout << "\n\t!!!Exit. Stop Game!!!\n";
+		return -1;
+	}
+
+	x2 = static_cast<int>(checker1.x[0]) - 97;
+
+	if (x2 < 0 || x2 > 7)
+	{
+		cout << "\nLetter is not respect to a...h\n";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(32767, '\n');
+		goto restart2;
+	}
+	cout << "\tNumber: ";
+	checker1.y = checkV();
+
+	y2 = abs(checker1.y -= 8);
+
+	if (desk[y2][x2] != '#')
+	{
+		cout << "\n\tNo step";
+		goto restart2;
+	}
+
+	tf = CheckStepKing(desk, x1, y1, x2, y2, ch, quarter);
+	if (tf)
+	{
+		if(abs(x2-x1) > 1 || abs(y2 - y1))
+			count = kickKing(desk, x1, y1, x2, y2, ch, quarter);
+
+		desk[y1][x1] = '#';
+		desk[y2][x2] = dyke;
+	}
+	else
+	{
+		cout << "\n\tNo step";
+		goto restart2;
+	}
+
+	return count;
+}
+
+int kickKing(char desk[8][8], int x1, int y1, int x2, int y2, char ch, int quarter)
+{
+	int dx = 0, dy = 0, nkick = 0;
+	char chop{};
+	dx = x2 - x1;
+	dy = y2 - y1;
+
+	if (ch == 'X')
+		chop = 'Y';
+	if (ch == 'Y')
+		chop = 'X';
+
+	//Checking free checkers for kick them by King
+	switch (quarter)
+	{
+	case 1:
+		//I quarter - Up & Left
+		for (int i = 1; i < abs(dx); i++)
+		{
+			if (desk[(y1 - i)][(x1 - i)] == chop)
+				{
+					desk[(y1 - i)][(x1 - i)] = '#';
+					nkick++;
+				}
+		}
+		break;
+	case 2:
+		//II quarter - Up & Right
+		for (int i = 1; i < abs(dx); i++)
+		{
+			if (desk[(y1 - i)][(x1 + i)] == chop)
+				{
+					desk[(y1 - i)][(x1 + i)] = '#';
+					nkick++;
+				}
+		}
+		break;
+	case 3:
+		//III quarter - Down & Right
+		for (int i = 1; i < abs(dx); i++)
+		{
+			if (desk[(y1 + i)][(x1 + i)] == chop)
+			{
+				desk[(y1 + i)][(x1 + i)] = '#';
+				nkick++;
+			}
+		}
+
+		break;
+	case 4:
+		//IV quarter - Down & Left
+		for (int i = 1; i < abs(dx); i++)
+		{
+			if (desk[(y1 + i)][(x1 - i)] == chop)
+			{
+				desk[(y1 + i)][(x1 - i)] = '#';
+				nkick++;
+			}
+		}
+		break;
+	}
+
+	return nkick;
+}
+
 int Player(char desk[8][8], char ch)
 {
 	int x = 0, y = 0;
 	int x1, y1;
 	int x2, y2;
 	bool tf;
+	char dyke{};
+
+	if (ch == 'X')
+		dyke = 'W';
+
+	if (ch == 'Y')
+		dyke = 'Z';
 
 restart1:
 	tf = false;
@@ -177,6 +398,11 @@ restart1:
 	checker1.y = checkV();
 
 	y1 = abs(checker1.y -= 8);
+
+	if (desk[y1][x1] == dyke)
+	{
+		return stepKing(desk, x1, y1, dyke, ch);
+	}
 
 	tf = CheckPosPlayer(desk, x1, y1, ch);
 
@@ -241,7 +467,15 @@ restart2:
 	tf = CheckStepPlayer(desk, x, y, x1, y1, x2, y2, ch);
 	if (tf)
 	{
-		desk[y2][x2] = ch;
+		if ((ch == 'X' && y2 == 0) || (ch == 'Y' && y2 == 7))
+		{
+			desk[y2][x2] = dyke;
+		}
+		else
+		{
+			desk[y2][x2] = ch;
+		}
+		
 		if (abs(x2 - x1) > 1 && abs(y2 - y1) > 1)
 		{
 			desk[y][x] = '#';
@@ -281,7 +515,13 @@ int dataProcess(char desk[8][8], int nchecker)
 		cout << "\n\tQty of won Black Checker: " << count1;
 		cout << "\n\t\t\tRemain: " << nchecker - count1 << endl;
 
-		//Functions of Player1
+		if (count1 == nchecker)
+		{
+			cout << "\n\tWHITE CHECKER WON THE GAME!!!";
+			return 0;
+		}
+
+		//Functions of Player2
 		index2 = Player(desk, 'Y');
 		if (index2 == -1)
 		{
@@ -294,7 +534,13 @@ int dataProcess(char desk[8][8], int nchecker)
 		cout << "\n\tQty of won White Checker: " << count2;
 		cout << "\n\t\t\tRemain: " << nchecker - count2 << endl;
 
-	} while (count1 < nchecker || count2 < nchecker);
+		if (count2 == nchecker)
+		{
+			cout << "\n\tBLACK CHECKER WON THE GAME!!!";
+			return 0;
+		}
+
+	} while (true);
 }
 
 void dataPrint(char desk[8][8])
