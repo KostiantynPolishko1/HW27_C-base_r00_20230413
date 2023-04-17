@@ -3,8 +3,12 @@
 
 using namespace std;
 
+
+//Function for displaying the game result table
 void printResultTable(const string descriptions[], const string(*whites)[2], const string(*blacks)[2], int size)
 {
+
+	//Outputting game result data using a loop
 	for (int i = 0; i < size; ++i)
 	{
 		cout << "|  " << (i + 1) << "  | " << descriptions[i];
@@ -54,15 +58,20 @@ void printResultTable(const string descriptions[], const string(*whites)[2], con
 
 int main()
 {
+	//Sample data for game result
 	string descriptions[] = { "won", "remain", "steps", "king", "winner" };
 	string whites[5][2] = { {"Player 1", " "}, {" ", " "}, {" ", " "}, {" ", " "}, {" ", " "} };
 	string blacks[5][2] = { {"Player 2", " "}, {" ", " "}, {" ", " "}, {" ", " "}, {" ", " "} };
 	int size = sizeof(descriptions) / sizeof(descriptions[0]);
+	
 
+
+	//Displaying the table header
 	cout << "----------------------------------------------------------" << endl;
 	cout << "| Num |    Description    |     White     |     Black     |" << endl;
 	cout << "----------------------------------------------------------" << endl;
 
+	//Displaying the game result table using the function
 	printResultTable(descriptions, whites, blacks, size);
 
 	return 0;
