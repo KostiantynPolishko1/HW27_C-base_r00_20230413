@@ -1,7 +1,4 @@
-#include<iostream>
-#include<string>
 
-using namespace std;
 
 
 //Function for displaying the game result table
