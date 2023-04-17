@@ -228,21 +228,26 @@ int stepKing(char desk[8][8], int x1, int y1, char dyke, char ch)
 restart2:
 	tf = false;
 	x2 = 0, y2 = 0;
-	cout
-		<< (dyke == 'W' ? "\n  White checker " : "\n  Black checker ") << dyke
-		<< " (Q - STOP GAME.)"
-		<< "\n  indicate pos:\n";
-	cout << "\tLetter: ";
+	cout 
+		<< "\n Your Turn, "
+		<< (dyke == 'W' ? "White King " : "Black King ") << dyke
+		<< "\n Enter direction: (Like a1, g6...) -> ";
+
 	getline(cin, checker1.x);
-	if (checker1.x.length() > 1)
+
+	if (checker1.x.length() != 2)
 	{
 		cout << "\n\tIncorrectly entered";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(-1); // and remove the previous input values from the input buffer
 		goto restart2;
 	}
 
 	if (checker1.x[0] == 'q' || checker1.x[0] == 'Q')
 	{
 		cout << "\n\t!!!Exit. Stop Game!!!\n";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(-1); // and remove the previous input values from the input buffer
 		return -1;
 	}
 
@@ -252,13 +257,21 @@ restart2:
 	{
 		cout << "\nLetter is not respect to a...h\n";
 		cin.clear(); // then return the cin to 'normal' mode of operation
-		cin.ignore(32767, '\n');
+		cin.ignore(-1); // and remove the previous input values from the input buffer
 		goto restart2;
 	}
-	cout << "\tNumber: ";
-	checker1.y = checkV();
 
-	y2 = abs(checker1.y -= 8);
+	y2 = static_cast<int>(checker1.x[1]) - 49;
+
+	if (y2 < 0 || y2 > 7)
+	{
+		cout << "\n Number is out of 1...7\n";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(-1); // and remove the previous input values from the input buffer
+		goto restart2;
+	}
+
+	y2 = abs(y2 -= 7);
 
 	if (desk[y2][x2] != '#')
 	{
@@ -269,7 +282,7 @@ restart2:
 	tf = CheckStepKing(desk, x1, y1, x2, y2, ch, quarter);
 	if (tf)
 	{
-		if(abs(x2-x1) > 1 || abs(y2 - y1))
+		if(abs(x2-x1) > 1)
 			count = kickKing(desk, x1, y1, x2, y2, ch, quarter);
 
 		desk[y1][x1] = '#';
@@ -331,7 +344,6 @@ int kickKing(char desk[8][8], int x1, int y1, int x2, int y2, char ch, int quart
 				nkick++;
 			}
 		}
-
 		break;
 	case 4:
 		//IV quarter - Down & Left
@@ -367,20 +379,25 @@ restart1:
 	tf = false;
 	x1 = 0, y1 = 0;
 	cout 
-		<< (ch == 'X'? "\n  White checker " : "\n  Black checker ") << ch
-		<< " (Q - STOP GAME.)"
-		<< "\n  select pos:";
-	cout << "\n\tLetter: ";
+		<< "\n Your Turn, "
+		<< (ch == 'X'? "White checker " : "Black checker ") << ch
+		<< "\n Enter position: (Like a1, g6...) -> ";
+
 	getline(cin, checker1.x);
-	if(checker1.x.length() > 1)
+
+	if(checker1.x.length() != 2)
 	{
 		cout << "\n\tIncorrectly entered";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(-1); // and remove the previous input values from the input buffer
 		goto restart1;
 	}
 
 	if (checker1.x[0] == 'q' || checker1.x[0] == 'Q')
 	{
 		cout << "\n\t!!!EXIT. STOP GAME!!!\n";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(-1); // and remove the previous input values from the input buffer
 		return -1;
 	}
 
@@ -388,16 +405,22 @@ restart1:
 
 	if (x1 < 0 || x1 > 7)
 	{
-		cout << "\nLetter is not respect to a...h\n";
+		cout << "\n Letter is out of a...h\n";
 		cin.clear(); // then return the cin to 'normal' mode of operation
-		cin.ignore(32767, '\n');
+		cin.ignore(-1);
 		goto restart1;
 	}
 
-	cout << "\tNumber: ";
-	checker1.y = checkV();
+	y1 = static_cast<int>(checker1.x[1]) - 49;
 
-	y1 = abs(checker1.y -= 8);
+	if (y1 < 0 || y1 > 7)
+	{
+		cout << "\n Number is out of 1...7\n";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(-1); // and remove the previous input values from the input buffer
+		goto restart1;
+	}
+	y1 = abs(y1 -= 7);
 
 	if (desk[y1][x1] == dyke)
 	{
@@ -427,20 +450,25 @@ restart2:
 	tf = false;
 	x2 = 0, y2 = 0;
 	cout
-		<< (ch == 'X' ? "\n  White checker " : "\n  Black checker ") << ch
-		<< " (Q - STOP GAME.)"
-		<< "\n  indicate pos:\n";
-	cout << "\tLetter: ";
+		<< "\n Your Turn, "
+		<< (ch == 'X' ? "White checker " : "Black checker ") << ch
+		<< "\n Enter direction: (Like a1, g6...) -> ";
+
 	getline(cin, checker1.x);
-	if (checker1.x.length() > 1)
+
+	if (checker1.x.length() != 2)
 	{
 		cout << "\n\tIncorrectly entered";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(-1); // and remove the previous input values from the input buffer
 		goto restart2;
 	}
 
 	if (checker1.x[0] == 'q' || checker1.x[0] == 'Q')
 	{
 		cout << "\n\t!!!Exit. Stop Game!!!\n";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(-1); // and remove the previous input values from the input buffer
 		return -1;
 	}
 
@@ -448,15 +476,22 @@ restart2:
 
 	if (x2 < 0 || x2 > 7)
 	{
-		cout << "\nLetter is not respect to a...h\n";
+		cout << "\n Letter is out of a...h\n";
 		cin.clear(); // then return the cin to 'normal' mode of operation
-		cin.ignore(32767, '\n');
+		cin.ignore(-1); // and remove the previous input values from the input buffer
 		goto restart2;
 	}
-	cout << "\tNumber: ";
-	checker1.y = checkV();
 
-	y2 = abs(checker1.y -= 8);
+	y2 = static_cast<int>(checker1.x[1]) - 49;
+
+	if (y2 < 0 || y2 > 7)
+	{
+		cout << "\n Number is out of 1...7\n";
+		cin.clear(); // then return the cin to 'normal' mode of operation
+		cin.ignore(-1); // and remove the previous input values from the input buffer
+		goto restart2;
+	}
+	y2 = abs(y2 -= 7);
 
 	if (desk[y2][x2] != '#')
 	{
@@ -497,7 +532,10 @@ int dataProcess(char desk[8][8], int nchecker)
 	//Move checkers trought the desk
 	int count1 = 0, index1 = 0;
 	int count2 = 0, index2 = 0;
-	
+	cout << "\n\tQty of won Black Checker: " << count1;
+	cout << "\n\t\t\tRemain: " << nchecker - count1
+		<< "\n\t(Q - STOP GAME.)" << endl;
+
 	do
 	{
 
@@ -513,7 +551,8 @@ int dataProcess(char desk[8][8], int nchecker)
 		system("CLS");
 		dataPrint(desk);
 		cout << "\n\tQty of won Black Checker: " << count1;
-		cout << "\n\t\t\tRemain: " << nchecker - count1 << endl;
+		cout << "\n\t\t\tRemain: " << nchecker - count1
+			 << "\n\t(Q - STOP GAME.)" << endl;
 
 		if (count1 == nchecker)
 		{
@@ -532,7 +571,8 @@ int dataProcess(char desk[8][8], int nchecker)
 		system("CLS");
 		dataPrint(desk);
 		cout << "\n\tQty of won White Checker: " << count2;
-		cout << "\n\t\t\tRemain: " << nchecker - count2 << endl;
+		cout << "\n\t\t\tRemain: " << nchecker - count2
+			<< "\n\t(Q - STOP GAME.)" << endl;
 
 		if (count2 == nchecker)
 		{
