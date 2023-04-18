@@ -13,35 +13,13 @@ struct Checkers
 	int y;
 	string x;
 
-} checker1, checker2;
+} checker1;
 
 void dataPrint(char desk[8][8]);
 
 void printResultTable(char desk[8][8], int nchecker, int count1, int count2, int &step1, int &step2);
 
 int kickKing(char desk[8][8], int x1, int y1, int x2, int y2, char ch, int quarter);
-
-int checkV()
-{
-	int a;
-	while (true) // the cycle continues until the user enters the correct value
-	{
-		cin >> a;
-		if (cin.fail()) // if the previous extraction was unsuccessful,
-		{
-			cout << "Incorrect input. Enter int value: ";
-			cin.clear(); // then return the cin to 'normal' mode of operation
-			cin.ignore(32767, '\n'); // and remove the previous input values from the input buffer
-		}
-		else // if all is well, return a
-		{
-			cin.ignore(32767, '\n'); // and remove the previous input values from the input buffer
-			return a;
-		}
-	}
-
-	return 0;
-}
 
 void fillDesk(char desk[8][8])
 {
@@ -531,11 +509,11 @@ restart2:
 
 int dataProcess(char desk[8][8], int nchecker)
 {
-	dataPrint(desk);
 	//Move checkers trought the desk
 	int count1 = 0, index1 = 0, step1 = 0;
 	int count2 = 0, index2 = 0, step2 = 0;
 
+	dataPrint(desk);
 	printResultTable(desk, nchecker, count1, count2, step1, step2);
 
 	do
@@ -547,6 +525,7 @@ int dataProcess(char desk[8][8], int nchecker)
 
 		if (index1 == -1)
 		{
+			cout << "\n\tBLACK CHECKER WON THE GAME!!\n";
 			return 0;
 		}
 		count1 += index1;
@@ -557,7 +536,7 @@ int dataProcess(char desk[8][8], int nchecker)
 		
 		if (count1 == nchecker)
 		{
-			cout << "\n\tWHITE CHECKER WON THE GAME!!!";
+			cout << "\n\tWHITE CHECKER WON THE GAME!!!\n";
 			return 0;
 		}
 
@@ -567,6 +546,7 @@ int dataProcess(char desk[8][8], int nchecker)
 
 		if (index2 == -1)
 		{
+			cout << "\n\tWHITE CHECKER WON THE GAME!!!\n";
 			return 0;
 		}
 		count2 += index2;
@@ -577,7 +557,7 @@ int dataProcess(char desk[8][8], int nchecker)
 
 		if (count2 == nchecker)
 		{
-			cout << "\n\tBLACK CHECKER WON THE GAME!!!";
+			cout << "\n\tBLACK CHECKER WON THE GAME!!!\n";
 			return 0;
 		}
 
@@ -603,17 +583,17 @@ void printResultTable(char desk[8][8], int nchecker, int count1, int count2, int
 				blackK++;
 		}
 
-	count1 == 0 ? dresult[0][0] = "-" : dresult[0][0] = to_string(count1);
-	count2 == 0 ? dresult[0][0] = "-" : dresult[0][1] = to_string(count2);
+	count1 == 0 ? dresult[0][0] : dresult[0][0] = to_string(count1);
+	count2 == 0 ? dresult[0][0] : dresult[0][1] = to_string(count2);
 
 	dresult[1][0] = to_string(nchecker - count1);
 	dresult[1][1] = to_string(nchecker - count2);
 
-	step1 == 0 ? dresult[2][0] = "-" : dresult[2][0] = to_string(step1);
-	step2 == 0 ? dresult[2][2] = "-" : dresult[2][1] = to_string(step2);
+	step1 == 0 ? dresult[2][0] : dresult[2][0] = to_string(step1);
+	step2 == 0 ? dresult[2][2] : dresult[2][1] = to_string(step2);
 	
-	whiteK == 0 ? dresult[3][0] = "-" : dresult[3][0] = to_string(whiteK);
-	blackK == 0 ? dresult[3][1] = "-" : dresult[3][1] = to_string(blackK);
+	whiteK == 0 ? dresult[3][0] : dresult[3][0] = to_string(whiteK);
+	blackK == 0 ? dresult[3][1] : dresult[3][1] = to_string(blackK);
 	
 	if (count1 == nchecker)
 		dresult[4][0] = "Play1";
@@ -638,14 +618,18 @@ void printResultTable(char desk[8][8], int nchecker, int count1, int count2, int
 			<< dresult[i][1] << (dresult[i][1].length() < 2 ? "     | " : "    | ") << endl;
 	}
 	cout << "\t -----------------------------------\n";
-	cout << "\n\t(Q - STOP GAME.)" << endl;
+	cout << "\n\t(Q - STOP GAME.)";
 }
 
 void dataPrint(char desk[8][8])
 {
 	char ch = 'A';
 
-	cout << endl;
+	cout 
+		<< "\n\t  WELCOME TO CHECKERS GAME 8 x 8\n"
+		<< "\n\t  white - \"X\", king - \"W\","
+		<< "\n\t  black - \"Y\", king - \"Z\",\n\n";
+
 	for (int i = 0; i < 8; i++)
 	{
 		if (i == 0)
